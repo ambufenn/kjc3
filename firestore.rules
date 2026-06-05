@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Global safety net: deny-all by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helper: document ID safety and boundary checks 
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    // Global helper: incoming resource representation
+    function incoming() { 
+      return request.resource.data; 
+    }
+
+    // 2. Validation Helper (Anti-Update-Gap & Shadows)
+    function isValidWaitlist(data) {
+      return data.keys().hasAll(['name', 'email', 'interest', 'createdAt'])
+        && data.keys().size() == 4
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 120
+        && data.email is string && data.email.size() >= 5 && data.email.size() <= 150
+        && data.interest is string && data.interest in ['sangat_tertarik', 'tertarik', 'mungkin', 'kurang_tertarik', 'tidak_tertarik']
+        && data.createdAt is string && data.createdAt.size() <= 100;
+    }
+
+    // 3. Match Block for the Waitlist Collection
+    match /waitlist/{waitlistId} {
+      // Allows anyone to register on the landing page form, but enforces strict payload validation
+      allow create: if isValidId(waitlistId) && isValidWaitlist(incoming());
+      
+      // Strict PII Isolation (Pillar 6): Reading, listing, updating and deleting waitlist items is completely blocked
+      // to secure email addresses from client-side scraping.
+      allow read, update, delete: if false;
+    }
+  }
+}

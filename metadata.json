@@ -1,0 +1,6 @@
+{
+  "name": "Kandang Juragan Cilik",
+  "description": "Landing page edukasi keuangan anak berbasis investasi ternak virtual yang aman dan menyenangkan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "waitlist": {
+      "title": "Waitlist",
+      "description": "Pendaftaran antrean akses awal pengguna untuk platform edukasi keuangan Kandang Juragan Cilik.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID Pendaftaran acak unik"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nama lengkap pendaftar"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Alamat email pendaftar"
+        },
+        "interest": {
+          "type": "string",
+          "enum": ["sangat_tertarik", "tertarik", "mungkin", "kurang_tertarik", "tidak_tertarik"],
+          "description": "Tingkat ketertarikan pendaftar"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Waktu pendaftaran dibuat"
+        }
+      },
+      "required": ["name", "email", "interest", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/waitlist/{waitlistId}": {
+      "schema": "waitlist",
+      "description": "Menyimpan seluruh data pendaftaran antrean (waitlist) yang masuk melalui landing page."
+    }
+  }
+}
